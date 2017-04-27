@@ -4,7 +4,7 @@
 ernie.92@hotmail.com  
 Miami, FL
 
-**Welcome to my Portfolio!**
+### **Welcome to my Portfolio!**
 
 Please navigate through the above folders to view projects I've completed and am currently working on.  
 Projects include:
@@ -13,5 +13,6 @@ Projects include:
   * Access
 * **SQL**
   * PeopleSoft
+  * Access
 * **Python**
   * DataQuest Lessons
