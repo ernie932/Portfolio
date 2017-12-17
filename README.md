@@ -14,5 +14,4 @@ Projects include:
 * **SQL**
   * PeopleSoft
   * Access
-* **Python**
-  * DataQuest Lessons
+
