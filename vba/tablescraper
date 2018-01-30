@@ -1,0 +1,99 @@
+Sub CopyPasteSpecialAllTables()
+
+Dim Sheet As Worksheet
+Dim oSh As Worksheet
+Dim oLo As ListObject
+Dim arr_header_row() As Variant
+
+shtnumberstart = 1
+shtnumberend = ActiveWorkbook.Sheets.Count
+
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+
+'Check if Sheet Name 'Values' already exists
+    For Each Sheet In ActiveWorkbook.Worksheets
+        If "Values" = Sheet.Name Then
+            response = MsgBox("The Sheet 'Values' already exists. If you proceed, the existing 'Values' sheet will be deleted and a new one generated." _
+            & " Would you like to continue?", vbYesNo, "Values Sheet Already Exists!")
+            If response = vbYes Then
+                ActiveWorkbook.Sheets("Values").Delete
+                GoTo Continue
+            Else
+                MsgBox ("The process was cancelled. Try again.")
+                Exit Sub
+            End If
+        End If
+    Next Sheet
+    
+Continue:
+'Create sheet at the end of workbook
+Set Sheet = ActiveWorkbook.Sheets.Add(After:= _
+             ActiveWorkbook.Sheets(ActiveWorkbook.Sheets.Count))
+Sheet.Name = "Values"
+
+
+'Reset Max_Header_Length variable
+max_header_length = 0
+
+'Look for tables in each sheet
+For i = shtnumberstart To shtnumberend
+    ActiveWorkbook.Sheets(i).Activate
+    Set oSh = ActiveSheet
+
+    For Each oLo In oSh.ListObjects
+    
+        'Check Header_Length against Max_Header_Length
+        header_length = oLo.HeaderRowRange.Cells.Count
+            If header_length > max_header_length Then
+                max_header_length = header_length
+                arr_header_row() = oLo.HeaderRowRange
+            End If
+    Next oLo
+    
+    If Not max_header_length = 0 Then
+    
+    'Put header in Values sheet
+    ActiveWorkbook.Sheets("Values").Activate 'Need to .Activate because still inside For loop involving specific sheet numbers
+    ActiveSheet.Range(Cells(1, 1), Cells(1, max_header_length)).Value = arr_header_row
+    ActiveWorkbook.Sheets("Values").Cells(1, max_header_length + 1) = "Sheet_Name"
+    
+    End If
+Next i
+
+For i = shtnumberstart To shtnumberend
+    ActiveWorkbook.Sheets(i).Activate
+    Set oSh = ActiveSheet
+
+    For Each oLo In oSh.ListObjects
+        
+        'Copy the DataBodyRange of Table
+        oSh.AutoFilterMode = False
+        oLo.DataBodyRange.Copy
+        Sheets(ActiveWorkbook.Sheets.Count).Activate
+        
+        'Determine last row to paste
+        lastRow = ActiveSheet.Range("A" & ActiveSheet.Rows.Count).End(xlUp).Row
+        ActiveSheet.Range("A" & lastRow + 1).Select
+        Selection.PasteSpecial xlPasteValues
+        
+        'Insert Sheet Name
+        row_count = oLo.DataBodyRange.Rows.Count
+        sheet_name = oSh.Name
+
+        ActiveSheet.Range(Cells(lastRow + 1, max_header_length + 1), Cells(lastRow + row_count, max_header_length + 1)).Value = sheet_name
+
+
+    Next oLo
+    
+Next i
+
+ActiveWorkbook.Sheets("Values").Range("A1").Activate
+
+        
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+End Sub
