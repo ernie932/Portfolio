@@ -9,9 +9,10 @@ Miami, FL
 Please navigate through the above folders to view projects I've completed and am currently working on.  
 Projects include:
 * **VBA**
-  * Excel
+
+* **Excel**
+
+* **Coming Soon**
   * Access
-* **SQL**
-  * PeopleSoft
-  * Access
+  * SQL
 
