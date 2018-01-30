@@ -1,0 +1,192 @@
+Sub ClearNames()
+
+Dim oName As Name
+
+UserForm1.Show
+Sheets(1).Select
+
+    For Each oName In ActiveWorkbook.Names
+        oName.Delete
+        'oName.Visible = True
+    Next oneName
+
+End Sub
+
+Sub RidofCondFormat()
+
+UserForm1.Show
+For i = 1 To ActiveWorkbook.Worksheets.count
+    ActiveWorkbook.Sheets(i).Activate
+    ActiveSheet.Cells.FormatConditions.Delete
+Next i
+
+End Sub
+
+Sub Collapse_All()
+
+UserForm1.Show
+
+SheetCount = ActiveWorkbook.Worksheets.count
+
+    For i = 1 To SheetCount
+    'Close groups
+    
+        If ActiveWorkbook.Worksheets(i).Visible = True Then
+            ActiveWorkbook.Worksheets(i).Select 'Replace:=False
+        Else: GoTo Next1
+        End If
+        ActiveWorkbook.Worksheets(i).Select
+        ActiveSheet.Outline.ShowLevels RowLevels:=1, ColumnLevels:=1
+    
+    'Home position or VBA equivalent of Ctrl+Home (not always A1)
+        ActiveWindow.ScrollRow = 1
+        ActiveWindow.ScrollColumn = 1
+        ActiveWindow.ActivePane.VisibleRange.Cells(1).Select
+Next1:
+    Next i
+
+'Selects first visible worksheet to avoid selection error
+For i = 1 To SheetCount
+    If ActiveWorkbook.Worksheets(i).Visible = True Then
+        ActiveWorkbook.Worksheets(i).Select
+        Exit For
+    End If
+Next i
+
+End Sub
+
+Sub Expand_All()
+
+UserForm1.Show
+
+SheetCount = ActiveWorkbook.Worksheets.count
+
+    For i = 1 To SheetCount
+    'Close groups
+    
+        If ActiveWorkbook.Worksheets(i).Visible = True Then
+            ActiveWorkbook.Worksheets(i).Select 'Replace:=False
+        Else: GoTo Next1
+        End If
+        ActiveWorkbook.Worksheets(i).Select
+        ActiveSheet.Outline.ShowLevels RowLevels:=8, ColumnLevels:=8
+Next1:
+    Next i
+
+'Selects first visible worksheet to avoid selection error
+For i = 1 To SheetCount
+
+    If ActiveWorkbook.Worksheets(i).Visible = True Then
+        ActiveWorkbook.Worksheets(i).Select
+        Exit For
+    End If
+Next i
+
+End Sub
+
+Sub ReplaceIndexMatch()
+'Finds "index(" in active sheet, Ctrl + Shift + Down, and copy paste special values.
+'Be careful if you have different formulas under!
+
+UserForm1.Show
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+With ActiveSheet.UsedRange
+    Set C = .Find("index(", LookIn:=xlFormulas)
+    If Not C Is Nothing Then
+        firstaddress = C.Address
+        Do
+            C.Select
+            Range(Selection, Selection.End(xlDown)).Select
+            Selection.Copy
+            Selection.PasteSpecial Paste:=xlPasteValues
+            
+            Set C = .FindNext(C)
+            If C Is Nothing Then
+                GoTo DoneFinding
+            End If
+            Loop While Not C Is Nothing And C.Address <> firstaddress
+    End If
+DoneFinding:
+End With
+
+Application.CutCopyMode = False
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+ThisWorkbook.ActiveSheet.Activate
+
+End Sub
+
+Sub ReplaceSumifs()
+'Finds "sumif" in active sheet and replaces with value.
+
+UserForm1.Show
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+With ActiveSheet.UsedRange
+    Set C = .Find("sumif", LookIn:=xlFormulas)
+    If Not C Is Nothing Then
+        firstaddress = C.Address
+        Do
+            C.Select
+            Selection.Copy
+            Selection.PasteSpecial Paste:=xlPasteValues
+            
+            Set C = .FindNext(C)
+            If C Is Nothing Then
+                GoTo DoneFinding
+            End If
+            Loop While Not C Is Nothing And C.Address <> firstaddress
+    End If
+DoneFinding:
+End With
+
+Application.CutCopyMode = False
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+ThisWorkbook.ActiveSheet.Activate
+
+End Sub
+
+Sub Replacevlookup()
+'Finds "vlookup(" in active sheet and replaces with value.
+
+UserForm1.Show
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+With ActiveSheet.UsedRange
+    Set C = .Find("vlookup(", LookIn:=xlFormulas)
+    If Not C Is Nothing Then
+        firstaddress = C.Address
+        Do
+            C.Select
+            Selection.Copy
+            Selection.PasteSpecial Paste:=xlPasteValues
+            
+            Set C = .FindNext(C)
+            If C Is Nothing Then
+                GoTo DoneFinding
+            End If
+            Loop While Not C Is Nothing And C.Address <> firstaddress
+    End If
+DoneFinding:
+End With
+
+Application.CutCopyMode = False
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+ThisWorkbook.ActiveSheet.Activate
+
+End Sub
