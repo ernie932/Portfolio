@@ -1,0 +1,95 @@
+
+Private Sub Worksheet_Change(ByVal Target As Range)
+
+On Error GoTo ErrorHandler
+
+    'define last row
+        Dim lastRow As Long
+        lastRow = ActiveSheet.Cells(Rows.Count, "B").End(xlUp).row
+    'define the range & row
+        For i = Range("A1").Value To lastRow
+        Dim row As Integer
+        row = i
+    'define the equations
+        Dim currentsalary As String
+        Dim currentsalarycolumn As Integer
+            currentsalarycolumnnumber = Application.WorksheetFunction.Match("CurrentBase", Range("A1:DZ1"), 0)
+            currentsalarycolumnletter = ConvertToLetter(currentsalarycolumnnumber)
+            currentsalary = currentsalarycolumnletter & row
+        Dim percentincrease As String
+            percentincreasecolumnnumber = Application.WorksheetFunction.Match("PctIncrease", Range("A1:DZ1"), 0)
+            percentincreasecolumnletter = ConvertToLetter(percentincreasecolumnnumber)
+            percentincrease = percentincreasecolumnletter & row
+        Dim dollarincrease As String
+            dollarincreasecolumnnumber = Application.WorksheetFunction.Match("AmtIncrease", Range("A1:DZ1"), 0)
+            dollarincreasecolumnletter = ConvertToLetter(dollarincreasecolumnnumber)
+            dollarincrease = dollarincreasecolumnletter & row
+    
+    'equations
+    
+   'Checks for letter inputs
+    If Not IsNumeric(Range(dollarincrease).Value) Then
+        Range(dollarincrease).Value = 0
+    End If
+    
+    If Not IsNumeric(Range(currentsalary).Value) Then
+        Range(currentsalary).Value = 0
+    End If
+    
+    If Not IsNumeric(Range(percentincrease).Value) Then
+        Range(percentincrease).Value = 0
+    End If
+    
+    'Begins regular checks
+                
+            If Range(dollarincrease).Value = Range(currentsalary).Value * Range(percentincrease).Value Then
+            Else
+                If Not Intersect(Target, Target.Worksheet.Range(percentincrease)) Is Nothing Then
+                    Range(dollarincrease).Value = Range(currentsalary).Value * Range(percentincrease).Value
+                Else
+                    If Not Intersect(Target, Target.Worksheet.Range(dollarincrease)) Is Nothing Then
+                        If Range(currentsalary).Value = 0 Then
+                            If Range(dollarincrease).Value = 0 Then
+                            Else
+                                Range(dollarincrease).Value = 0
+                            End If
+                        Else
+                        Range(percentincrease).Value = Range(dollarincrease).Value / Range(currentsalary).Value
+                        End If
+                    End If
+                End If
+                If Not Intersect(Target, Target.Worksheet.Range(currentsalary)) Is Nothing Then
+                    If Range(currentsalary).Value = 0 Then
+                        Range(percentincrease).Value = 0
+                    Else
+                        Range(dollarincrease).Value = Range(currentsalary).Value * Range(percentincrease).Value
+                    End If
+                End If
+            End If
+            
+            If Range(currentsalary).Value = 0 Then
+                If Range(percentincrease).Value = 0 Then
+                Else
+                    Range(percentincrease).Value = 0
+                End If
+                If Range(dollarincrease).Value = 0 Then
+                Else
+                    Range(dollarincrease).Value = 0
+                End If
+            Else
+            End If
+            
+    'tell it to go to the next row (loop)
+ErrorHandler:
+        Next i
+        
+
+
+End Sub
+
+Function ConvertToLetter(iCol) As String
+    
+    ConvertToLetter = Split(Cells(, iCol).Address, "$")(1)
+    
+End Function
+
